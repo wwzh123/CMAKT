@@ -693,6 +693,7 @@ class CMAKT(nn.Module):
 
         # [batch_size, max_step]
         logits = self.fc(h_gikt + h_saint_plus)
+        logits = F.relu(logits)
 
         pred = torch.sigmoid(logits.view(-1, self.max_step))
         binary_pred = (pred >= 0.5)

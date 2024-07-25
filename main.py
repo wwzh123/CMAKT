@@ -43,7 +43,7 @@ def parse_args():
     arg_parser.add_argument('--limit_max_len', type=int, default=200)
     arg_parser.add_argument('--limit_min_len', type=int, default=3)
 
-    # GCN
+
     arg_parser.add_argument('--n_hop', type=int, default=0)
     arg_parser.add_argument('--aggregator', type=str, default='sum')
     arg_parser.add_argument('--skill_neighbor_num', type=int, default=10)
@@ -55,7 +55,7 @@ def parse_args():
     arg_parser.add_argument('--sim_emb', type=str, default='skill_emb')
     arg_parser.add_argument('--att_bound', type=float, default=0.5)
 
-    # SAINT
+
     arg_parser.add_argument('--MAX_SEQ', type=int, default=9)
     arg_parser.add_argument('--EMBED_DIMS', type=int, default=100)
     arg_parser.add_argument('--ENC_HEADS', type=int, default=4)

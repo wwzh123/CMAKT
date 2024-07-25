@@ -70,7 +70,7 @@ class StackedNMultiHeadAttention(nn.Module):
         # FFN
         self.ffn = nn.ModuleList(n_stacks * [FFN(n_dims)])
 
-        # 生成上三角矩阵
+
         self.mask = torch.triu(torch.ones(seq_len, seq_len), diagonal=1).to(dtype=torch.bool)
 
     def forward(self, input_q, input_k, input_v, encoder_output=None, break_layer=None):
@@ -245,7 +245,7 @@ class GIKT(nn.Module):
         self.feature_embedding = params['feature_embedding']
         self.hist_neighbor_index = params['hist_neighbor_index']
 
-        # todo 将原输入转化为嵌入向量
+
         if self.n_hop > 0:
             if self.args.aggregator == 'sum':
                 self.aggregator_class = SumAggregator
@@ -308,7 +308,7 @@ class GIKT(nn.Module):
         # [batch_size, max_step, hidden_size]
         output_series = self.lstm(input_trans_embedding)
 
-        # todo recap模块
+        # todo retrace
         if self.args.model == "hssi":  # hard selection, use hi  (HS)
             # [self.batch_size,max_step,self.hist_neighbor_num,hidden_size]
             self.hist_neighbors_features = self.hist_neighbor_sampler_hard(output_series)
@@ -396,7 +396,7 @@ class GIKT(nn.Module):
     def linear_relu(self, feature_embedding, linear):
         """
         :param feature_embedding: [batch_size, max_step, hidden_size]
-        :param linear:  线性变换
+        :param linear
         :return: [batch_size, max_step, hidden_size]
         """
         # [batch_size * max_step, hidden_size]
@@ -582,7 +582,7 @@ class GIKT(nn.Module):
         # [batch_size * max_step, question_neighbor_num, hidden_size]
         embedding = embedding.permute(1, 0, 2)
 
-        # 问题的邻居数量小于采样的邻居数量，则进行复制操作增加邻居
+
         if self.question_neighbor_num < self.next_neighbor_num:
             embedding = embedding.repeat(1, -(-self.next_neighbor_num // embedding.size(0)), 1)
 
@@ -635,11 +635,11 @@ class CMAKT(nn.Module):
         hist_neighbor_index = torch.from_numpy(np.array(hist_neighbor_index, dtype=np.int64)).to(self.device)
         batch_size = features_answer_index.size(0)
 
-        # 三元组索引
+
         # [batch_size, max_step + 1, field_size]
         select_feature_index = features_answer_index[:, :, self.select_index]
 
-        # 技能索引
+
         # [batch_size, max_step]
         # [batch_size, max_step, embedding_size]
         skill_index = select_feature_index[:, :-1, 0]
@@ -650,7 +650,7 @@ class CMAKT(nn.Module):
         next_skill_index = select_feature_index[:, 1:, 0]
         next_skills_embedding = self.feature_embedding[next_skill_index]
 
-        # 问题索引
+
         # [batch_size, max_step]
         # [batch_size, max_step, embedding_size]
         questions_index = select_feature_index[:, :-1, 1]
@@ -661,7 +661,7 @@ class CMAKT(nn.Module):
         next_questions_index = select_feature_index[:, 1:, 1]
         next_questions_embedding = self.feature_embedding[next_questions_index]
 
-        # 答案索引
+
         # [batch_size, max_step]
         # [batch_size, max_step, embedding_size]
         input_answers_index = select_feature_index[:, :-1, -1]

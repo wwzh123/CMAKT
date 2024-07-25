@@ -43,29 +43,28 @@ def data_process_initial(args, save_file):
     args.valid_seqs, _, _, _ = load_data(valid_data_file, args.field_size, args.max_step)
     print("original valid seqs num:%d" % len(args.valid_seqs))
 
-    # (技能)数量 = 最大技能id + 1 // 训练 + 测试
+
     args.skill_num = max(train_max_skill_id, test_max_skill_id) + 1
     print('skill num: %s' % args.skill_num)
 
-    # (技能 + 问题)数量 = 最大问题id + 1 // 训练 + 测试
+
     skill_quest_num = max(train_max_question_id, test_max_question_id) + 1
 
-    # (问题)数量 = (技能 + 问题)数量 - (技能)数量 // 训练 + 测试
+
     args.question_num = skill_quest_num - args.skill_num
     print('quest num: %s' % args.question_num)
 
-    # (技能 + 问题 + 答案)的数量 = 最大答案id + 1 //训练 + 测试
+
     args.feature_answer_size = feature_answer_id + 1
 
-    # 构建技能矩阵的路径
-    # multi-skill， # 加载技能矩阵
+
     skill_matrix_file = os.path.join(args.data_dir, args.dataset, args.dataset + '_skill_matrix.txt')
     args.skill_matrix = np.loadtxt(skill_matrix_file)
 
-    # 构建邻接表和交互列表
+
     skill_question_adj = build_skill_question_adj(args.train_seqs, args.test_seqs, args.skill_matrix, skill_quest_num)
 
-    # 提取问题和技能的关系
+
     args.question_neighbors, args.skill_neighbors = extract_qs_relations(skill_question_adj, args.skill_num,
                                                                          skill_quest_num, args.question_neighbor_num,
                                                                          args.skill_neighbor_num)
@@ -92,21 +91,21 @@ def build_skill_question_adj(train_seqs, test_seqs, skill_matrix, skill_quest_nu
 
 
 def extract_qs_relations(skill_question_adj, skill_num, skill_quest_num, question_neighbor_num, skill_neighbor_num):
-    # 创建一个大小为skill_quest_num行，question_neighbor_num列的整型数组，初始值为0
+
     question_neighbors = np.zeros([skill_quest_num, question_neighbor_num], dtype=np.int32)
 
-    # 创建一个大小为skill_num行，skill_neighbor_num列的整型数组，初始值为0
+
     skill_neighbors = np.zeros([skill_num, skill_neighbor_num], dtype=np.int32)
 
-    # 遍历skill_question_adj的索引和邻居列表
+
     for index, neighbors in enumerate(skill_question_adj):
         if len(neighbors) > 0:
-            if index < skill_num:  # 技能
+            if index < skill_num:
                 if len(neighbors) >= skill_neighbor_num:
                     skill_neighbors[index] = np.random.choice(neighbors, skill_neighbor_num, replace=False)
                 else:
                     skill_neighbors[index] = np.random.choice(neighbors, skill_neighbor_num, replace=True)
-            else:  # 问题
+            else:
                 if len(neighbors) >= question_neighbor_num:
                     question_neighbors[index] = np.random.choice(neighbors, question_neighbor_num, replace=False)
                 else:
